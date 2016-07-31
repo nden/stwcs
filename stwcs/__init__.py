@@ -21,7 +21,6 @@ from . import distortion
 from stsci.tools import fileutil
 from stsci.tools import teal
 
-__docformat__ = 'restructuredtext'
 
 from .version import *
 

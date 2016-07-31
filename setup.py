@@ -23,7 +23,7 @@ else:
 
 
 version = relic.release.get_info()
-relic.release.write_template(version, 'lib/stwcs')
+relic.release.write_template(version, 'stwcs')
  
 try:
     from distutils.config import ConfigParser
@@ -72,10 +72,7 @@ setup(
         'numpy',
         'stsci.tools',
     ],
-    package_dir = {
-        '': 'lib',
-    },
-    packages = find_packages('lib'),
+    packages = find_packages(),
     tests_require = ['pytest'],
     package_data = {
         'stwcs/gui': ['*.help'],
