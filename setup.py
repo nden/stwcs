@@ -24,7 +24,7 @@ else:
 
 version = relic.release.get_info()
 relic.release.write_template(version, 'lib/stwcs')
-
+ 
 try:
     from distutils.config import ConfigParser
 except ImportError:
@@ -82,5 +82,5 @@ setup(
         'stwcs/gui/pars': ['*'],
         'stwcs/gui/htmlhelp': ['*'],
     },
-    cmdclass = {"test: PyTest"}
+    cmdclass = {"test": PyTest}
 )
