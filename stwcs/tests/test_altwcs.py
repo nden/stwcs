@@ -1,10 +1,19 @@
-import shutil, os
+import shutil
+import os
 from astropy.io import fits as pyfits
 from stwcs.wcsutil import altwcs
 from stwcs import updatewcs
 from stwcs.wcsutil import HSTWCS
 import numpy as np
 from numpy.testing import utils
+
+from . import data
+data_path = os.path.split(os.path.abspath(data.__file__))[0]
+
+
+def get_filepath(filename, directory=data_path):
+    return os.path.join(directory, filename)
+
 
 def compare_wcs(w1, w2, exclude_keywords=None):
     """
@@ -34,52 +43,67 @@ def compare_wcs(w1, w2, exclude_keywords=None):
     if not exclude_ctype:
         utils.assert_array_equal(np.array(w1.wcs.ctype), np.array(w2.wcs.ctype))
 
-class TestAltWCS:
-    def setUp(self):
+class TestAltWCS(object):
+
+    def setup_class(self):
+        acs_orig_file = get_filepath('j94f05bgq_flt.fits')
+        simple_orig_file = get_filepath('simple.fits')
+        current_dir = os.path.abspath(os.path.curdir)
+        simple_file = get_filepath('simple.fits', current_dir)
+        acs_file = get_filepath('j94f05bgq_flt.fits', current_dir)
+
         try:
-            os.remove('j94f05bgq_flt.fits')
-            os.remove('simple.fits')
+            os.remove(acs_file)
+            os.remove(simple_file)
         except OSError:
             pass
-        shutil.copyfile('orig/j94f05bgq_flt.fits', './j94f05bgq_flt.fits')
-        shutil.copyfile('orig/simple.fits', './simple.fits')
-        updatewcs.updatewcs('j94f05bgq_flt.fits')
-        self.filename = 'j94f05bgq_flt.fits'
-        self.simplefits = 'simple.fits'
-        self.ww = HSTWCS(self.filename, ext=1)
+        idctab = get_filepath('postsm4_idc.fits')
+        npol_file = get_filepath('qbu16424j_npl.fits')
+        d2imfile = get_filepath('new_wfc_d2i.fits ')
+
+        shutil.copyfile(acs_orig_file, acs_file)
+        shutil.copyfile(simple_orig_file, simple_file)
+        pyfits.setval(acs_file, ext=0, keyword="IDCTAB", value=idctab)
+        pyfits.setval(acs_file, ext=0, keyword="NPOLFILE", value=npol_file)
+        pyfits.setval(acs_file, ext=0, keyword="D2IMFILE", value=d2imfile)
+
+        updatewcs.updatewcs(acs_file)
+        self.acs_file = acs_file
+        self.simplefits = simple_file
+        self.ww = HSTWCS(self.acs_file, ext=1)
 
     def test_archive(self):
-        altwcs.archiveWCS(self.filename, ext=1, wcskey='Z', wcsname='ZTEST', reusekey=False)
-        w1 = HSTWCS(self.filename, ext=1)
-        w1z = HSTWCS(self.filename, ext=1, wcskey='Z')
+        altwcs.archiveWCS(self.acs_file, ext=1, wcskey='Z', wcsname='ZTEST', reusekey=False)
+        w1 = HSTWCS(self.acs_file, ext=1)
+        w1z = HSTWCS(self.acs_file, ext=1, wcskey='Z')
         compare_wcs(w1, w1z)
 
     def test_archive_clobber(self):
-        altwcs.archiveWCS(self.filename, ext=1, wcskey='Z', wcsname='ZTEST', reusekey=True)
-        w1 = HSTWCS(self.filename, ext=1)
-        w1z = HSTWCS(self.filename, ext=1, wcskey='Z')
+        altwcs.archiveWCS(self.acs_file, ext=1, wcskey='Z', wcsname='ZTEST', reusekey=True)
+        w1 = HSTWCS(self.acs_file, ext=1)
+        w1z = HSTWCS(self.acs_file, ext=1, wcskey='Z')
         compare_wcs(w1, w1z)
 
-    def test_restoreWCS(self):
+    def test_restore_wcs(self):
         # test restore on a file
-        altwcs.restoreWCS(self.filename, ext=1, wcskey='O')
-        w1o = HSTWCS(self.filename, ext=1, wcskey='O')
-        w1 = HSTWCS(self.filename, ext=1)
+        altwcs.restoreWCS(self.acs_file, ext=1, wcskey='O')
+        w1o = HSTWCS(self.acs_file, ext=1, wcskey='O')
+        w1 = HSTWCS(self.acs_file, ext=1)
         compare_wcs(w1, w1o, exclude_keywords=['ctype'])
 
-    def test_restoreWCSMem(self):
+    def test_restore_wcs_mem(self):
         # test restore on an HDUList object
-        altwcs.archiveWCS(self.filename, ext=[('SCI',1), ('SCI',2)], wcskey='T')
-        pyfits.setval(self.filename, ext=('SCI',1), keyword='CRVAL1', value=1)
-        pyfits.setval(self.filename, ext=('SCI',2), keyword='CRVAL1', value=1)
-        f = pyfits.open(self.filename, mode='update')
+        altwcs.archiveWCS(self.acs_file, ext=[('SCI', 1), ('SCI', 2)], wcskey='T')
+        pyfits.setval(self.acs_file, ext=('SCI', 1), keyword='CRVAL1', value=1)
+        pyfits.setval(self.acs_file, ext=('SCI', 2), keyword='CRVAL1', value=1)
+        f = pyfits.open(self.acs_file, mode='update')
         altwcs.restoreWCS(f, ext=1, wcskey='T')
         f.close()
-        w1o = HSTWCS(self.filename, ext=1, wcskey='T')
-        w1 = HSTWCS(self.filename, ext=1)
+        w1o = HSTWCS(self.acs_file, ext=1, wcskey='T')
+        w1 = HSTWCS(self.acs_file, ext=1)
         compare_wcs(w1, w1o)
 
-    def test_restoreSimple(self):
+    def test_restore_simple(self):
         # test restore on simple fits format
         altwcs.archiveWCS(self.simplefits, ext=0, wcskey='R')
         pyfits.setval(self.simplefits, ext=0, keyword='CRVAL1R', value=1)
@@ -88,57 +112,57 @@ class TestAltWCS:
         ws = HSTWCS(self.simplefits, ext=0)
         compare_wcs(ws, wo)
 
-    def test_restoreWCSFromTo(self):
+    def test_restore_wcs_from_to(self):
         # test restore from ... to ...
-        altwcs.archiveWCS(self.filename, ext=[('SCI',1), ('SCI',2)], wcskey='T')
-        pyfits.setval(self.filename, ext=('SCI',1), keyword='CRVAL1', value=1)
-        pyfits.setval(self.filename, ext=('SCI',2), keyword='CRVAL1', value=1)
-        f = pyfits.open(self.filename, mode='update')
+        #altwcs.archiveWCS(self.acs_file, ext=[('SCI',1), ('SCI',2)], wcskey='T')
+        pyfits.setval(self.acs_file, ext=('SCI', 1), keyword='CRVAL1', value=1)
+        pyfits.setval(self.acs_file, ext=('SCI', 2), keyword='CRVAL1', value=1)
+        f = pyfits.open(self.acs_file, mode='update')
         altwcs.restore_from_to(f, fromext='SCI', toext=['SCI', 'ERR', 'DQ'],
-                          wcskey='T')
+                               wcskey='T')
         f.close()
-        w1o = HSTWCS(self.filename, ext=('SCI',1), wcskey='T')
-        w1 = HSTWCS(self.filename, ext=('SCI', 1))
+        w1o = HSTWCS(self.acs_file, ext=('SCI', 1), wcskey='T')
+        w1 = HSTWCS(self.acs_file, ext=('SCI', 1))
         compare_wcs(w1, w1o)
-        w2 = HSTWCS(self.filename, ext=('ERR',1))
+        w2 = HSTWCS(self.acs_file, ext=('ERR', 1))
         compare_wcs(w2, w1o, exclude_keywords=['ctype'])
-        w3 = HSTWCS(self.filename, ext=('DQ',1))
+        w3 = HSTWCS(self.acs_file, ext=('DQ', 1))
         compare_wcs(w3, w1o, exclude_keywords=['ctype'])
-        w4o = HSTWCS(self.filename, ext=4, wcskey='T')
-        w4 = HSTWCS(self.filename, ext=('SCI',2))
+        w4o = HSTWCS(self.acs_file, ext=4, wcskey='T')
+        w4 = HSTWCS(self.acs_file, ext=('SCI', 2))
         compare_wcs(w4, w4o)
-        w5 = HSTWCS(self.filename, ext=('ERR', 2))
+        w5 = HSTWCS(self.acs_file, ext=('ERR', 2))
         compare_wcs(w5, w4o, exclude_keywords=['ctype'])
-        w6 = HSTWCS(self.filename, ext=('DQ',2))
+        w6 = HSTWCS(self.acs_file, ext=('DQ', 2))
         compare_wcs(w3, w1o, exclude_keywords=['ctype'])
 
-    def test_deleteWCS(self):
-        altwcs.archiveWCS(self.filename, ext=1, wcskey='Z')
-        altwcs.deleteWCS(self.filename, ext=1, wcskey='Z')
-        utils.assert_raises(KeyError, HSTWCS, self.filename, ext=1, wcskey='Z')
+    def test_delete_wcs(self):
+        #altwcs.archiveWCS(self.acs_file, ext=1, wcskey='Z')
+        altwcs.deleteWCS(self.acs_file, ext=1, wcskey='Z')
+        utils.assert_raises(KeyError, HSTWCS, self.acs_file, ext=1, wcskey='Z')
 
     def test_pars_file_mode1(self):
-        assert( not altwcs._parpasscheck(self.filename, ext=1, wcskey='Z'))
+        assert(not altwcs._parpasscheck(self.acs_file, ext=1, wcskey='Z'))
 
     def test_pars_file_mode2(self):
-        f = pyfits.open(self.filename)
-        assert( not altwcs._parpasscheck(f, ext=1, wcskey='Z'))
+        f = pyfits.open(self.acs_file)
+        assert(not altwcs._parpasscheck(f, ext=1, wcskey='Z'))
         f.close()
 
     def test_pars_ext(self):
-        f = pyfits.open(self.filename, mode='update')
+        f = pyfits.open(self.acs_file, mode='update')
         assert(altwcs._parpasscheck(f, ext=1, wcskey='Z'))
-        assert(altwcs._parpasscheck(f, ext=[('sci',1),('sci',2)], wcskey='Z'))
+        assert(altwcs._parpasscheck(f, ext=[('sci', 1), ('sci', 2)], wcskey='Z'))
         assert(altwcs._parpasscheck(f, ext=('sci', 1), wcskey='Z'))
         f.close()
 
     def test_pars_wcskey_not1char(self):
-        f = pyfits.open(self.filename, mode='update')
+        f = pyfits.open(self.acs_file, mode='update')
         assert(not altwcs._parpasscheck(f, ext=1, wcskey='ZZ'))
         f.close()
 
     def test_pars_wcskey(self):
-        f = pyfits.open(self.filename, mode='update')
+        f = pyfits.open(self.acs_file, mode='update')
         assert(altwcs._parpasscheck(f, ext=1, wcskey=' '))
         #assert(not altwcs._parpasscheck(f, ext=1, wcskey=' ', reusekey=False))
         #assert(altwcs._parpasscheck(f, ext=1, wcskey='O'))
