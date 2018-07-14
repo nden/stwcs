@@ -47,7 +47,7 @@ matrix:
 	    - ASTROPY_VERSION=development
 	    - CONDA_CHANNELS='http://ssb.stsci.edu/conda-dev'
             - CONDA_DEPENDENCIES='pytest drizzlepac'
-            - SETUP_CMD="test"
+            - MAIN_CMD='python setup.py test' SETUP_CMD=""
 
     allow_failures:
         # Do a PEP8 test with pycodestyle
