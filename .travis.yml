@@ -45,7 +45,6 @@ matrix:
           env: 
             - NUMPY_VERSION=stable
 	    - ASTROPY_VERSION=development
-            - MAIN_CMD='python setup.py'
 	    - CONDA_CHANNELS='http://ssb.stsci.edu/conda-dev'
             - CONDA_DEPENDENCIES='pytest drizzlepac'
             - SETUP_CMD="test"
