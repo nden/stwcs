@@ -42,7 +42,6 @@ matrix:
         - python: 3.7
           dist: xenial
           sudo: true
-          env: SETUP_CMD="test"
 
     allow_failures:
         # Do a PEP8 test with pycodestyle
