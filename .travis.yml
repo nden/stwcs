@@ -19,7 +19,9 @@ env:
         - ASTROPY_VERSION=development
         - MAIN_CMD='python setup.py'
         - CONDA_CHANNELS='http://ssb.stsci.edu/conda-dev'
-        - CONDA_DEPENDENCIES='pytest drizzlepac'
+        - CONDA_DEPENDENCIES='pytest'
+        - TOOLS_GIT='git+https://github.com/spacetelescope/stsci.tools.git'
+        - PIP_DEPENDENCIES="$TOOLS_GIT"
 
     matrix:
         - SETUP_CMD='egg_info'
