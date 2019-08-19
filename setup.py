@@ -91,5 +91,5 @@ setup(
         'stwcs/gui/pars': ['*'],
         'stwcs/gui/htmlhelp': ['*'],
     },
-    cmdclass = {"test": PyTest}
+    #cmdclass = {"test": PyTest}
 )
