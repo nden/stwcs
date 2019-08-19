@@ -47,8 +47,8 @@ matrix:
 
         # build sphinx documentation with warnings
         - python: 3.6
-          env: SETUP_CMD='build_sphinx'
-               PIP_DEPENDENCIES='sphinx-automodapi sphinx_rtd_theme git+https://github.com/spacetelescope/stsci.tools.git'
+          env: MAIN_CMD="cd doc; make html"  SETUP_CMD=""  # SETUP_CMD='build_sphinx'
+               PIP_DEPENDENCIES='sphinx-automodapi sphinx_rtd_theme'
 
         - python: 3.6
           env: NUMPY_VERSION=dev PIP_DEPENDENCIES="$ASTROPY_GIT SETUP_CMD='test'
