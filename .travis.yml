@@ -23,7 +23,7 @@ env:
         - TOOLS_GIT='git+https://github.com/spacetelescope/stsci.tools.git'
         #- PIP_DEPENDENCIES="$TOOLS_GIT"
         - TEST_COMMAND="pytest"
-        - PIP_DEPENDENCIES=".[test]
+        - PIP_DEPENDENCIES=".[test]"
 
 matrix:
 
