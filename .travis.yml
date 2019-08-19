@@ -1,14 +1,13 @@
-language: c
+language: python
 
 os:
     - linux
-    #- osx
 
 sudo: false
 
 python:
     - 3.6
-    #- 3.7
+    - 3.7
 
 env:
     global:
@@ -16,14 +15,13 @@ env:
         # overidden underneath. They are defined here in order to save having
         # to repeat them for all configurations.
         - NUMPY_VERSION=stable
-        #- ASTROPY_VERSION=stable
+        - ASTROPY_VERSION=stable
         - MAIN_CMD='python setup.py'
-        - CONDA_CHANNELS='http://ssb.stsci.edu/astroconda'
+        #- CONDA_CHANNELS='http://ssb.stsci.edu/astroconda'
         #- CONDA_DEPENDENCIES='pytest'
         - ASTROPY_GIT='git+https://github.com/astropy/astropy.git#egg=astropy'
         - TOOLS_GIT='git+https://github.com/spacetelescope/stsci.tools.git'
         - PIP_DEPENDENCIES="$TOOLS_GIT"
-
 
     matrix:
         - SETUP_CMD='egg_info'
@@ -56,8 +54,8 @@ matrix:
           env: NUMPY_VERSION=dev PIP_DEPENDENCIES="$ASTROPY_GIT SETUP_CMD='test'
                #EVENT_TYPE='cron'
 
-        - python: 3.6
-          env: PIP_DEPENDENCIES="$ASTROPY_GIT SETUP_CMD='test'
+        #- python: 3.6
+        #  env: PIP_DEPENDENCIES="$ASTROPY_GIT SETUP_CMD='test'
                #EVENT_TYPE='cron'
 
         #- python: 3.7
@@ -74,8 +72,8 @@ matrix:
           env: MAIN_CMD='pycodestyle stwcs --count' SETUP_CMD=''
 
 install:
-    - git clone git://github.com/astropy/ci-helpers.git
-    - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
-
+    #- git clone git://github.com/astropy/ci-helpers.git
+    #- source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
+    pip install .[test]
 script:
     - $MAIN_CMD $SETUP_CMD

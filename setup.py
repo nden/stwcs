@@ -9,13 +9,7 @@ from subprocess import check_call, CalledProcessError
 
 if sys.version_info < (3, 5):
     error = """
-    STWCS 1.4+ does not support Python 2.x, 3.0, 3.1, 3.2, 3.3 or 3.4.
-    Beginning with STWCS 1.4.0, Python 3.5 and above is required.
-
-    This may be due to an out of date pip.
-
-    Make sure you have pip >= 9.0.1.
-
+    STWCS now supports Python 3.5 and above.
     """
     sys.exit(error)
 
