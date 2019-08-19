@@ -15,18 +15,19 @@ env:
         # overidden underneath. They are defined here in order to save having
         # to repeat them for all configurations.
         - NUMPY_VERSION=stable
-        - ASTROPY_VERSION=stable
-        - MAIN_CMD='python setup.py'
+        #- ASTROPY_VERSION=stable
+        #- MAIN_CMD='python setup.py'
         #- CONDA_CHANNELS='http://ssb.stsci.edu/astroconda'
         #- CONDA_DEPENDENCIES='pytest'
         - ASTROPY_GIT='git+https://github.com/astropy/astropy.git#egg=astropy'
         - TOOLS_GIT='git+https://github.com/spacetelescope/stsci.tools.git'
-        - PIP_DEPENDENCIES="$TOOLS_GIT"
+        #- PIP_DEPENDENCIES="$TOOLS_GIT"
+        - TEST_COMMAND="pytest"
 
     matrix:
         - SETUP_CMD='egg_info'
         - SETUP_CMD='test'
-
+        - PIP_DEPENDENCIES=".[test]
 matrix:
 
     # Don't wait for allowed failures
@@ -35,23 +36,23 @@ matrix:
     include:
         # Numpy
         - python: 3.5
-          env: NUMPY_VERSION=1.15 SETUP_CMD="test"
+          env: NUMPY_VERSION=1.15
 
         # Numpy
         - python: 3.6
-          env: NUMPY_VERSION=1.15 SETUP_CMD="test"
+          env: NUMPY_VERSION=1.15
 
         # Do a PEP8 test with pycodestyle
         - python: 3.6
-          env: MAIN_CMD='pycodestyle stwcs --count' SETUP_CMD=''
+          env: TEST_COMMAND='pycodestyle stwcs --count'
 
         # build sphinx documentation with warnings
         - python: 3.6
-          env: MAIN_CMD="make directory=doc html"  SETUP_CMD=""
+          env: TEST_COMMAND="make --directory=doc html"
                PIP_DEPENDENCIES='sphinx-automodapi sphinx_rtd_theme'
 
         - python: 3.6
-          env: NUMPY_VERSION=dev PIP_DEPENDENCIES="$ASTROPY_GIT SETUP_CMD='test'
+          env: NUMPY_VERSION=dev PIP_DEPENDENCIES="$ASTROPY_GIT"
                #EVENT_TYPE='cron'
 
         #- python: 3.6
@@ -69,11 +70,15 @@ matrix:
     allow_failures:
         # Do a PEP8 test with pycodestyle
         - python: 3.6
-          env: MAIN_CMD='pycodestyle stwcs --count' SETUP_CMD=''
+          env: TEST_COMMAND='pycodestyle stwcs --count'
 
 install:
     #- git clone git://github.com/astropy/ci-helpers.git
     #- source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
-    pip install .[test]
+    #pip install .[test]
+    - pip install numpy~=$NUMPY_VERSION
+    - pip install $PIP_DEPENDENCIES
+
 script:
-    - $MAIN_CMD $SETUP_CMD
+    #- $MAIN_CMD $SETUP_CMD
+    - $TEST_COMMAND
