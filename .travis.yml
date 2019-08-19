@@ -47,7 +47,7 @@ matrix:
 
         # build sphinx documentation with warnings
         - python: 3.6
-          env: MAIN_CMD="cd doc; make html"  SETUP_CMD=""
+          env: MAIN_CMD="make directory=doc html"  SETUP_CMD=""
                PIP_DEPENDENCIES='sphinx-automodapi sphinx_rtd_theme'
 
         - python: 3.6
