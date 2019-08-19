@@ -23,11 +23,8 @@ env:
         - TOOLS_GIT='git+https://github.com/spacetelescope/stsci.tools.git'
         #- PIP_DEPENDENCIES="$TOOLS_GIT"
         - TEST_COMMAND="pytest"
-
-    matrix:
-        - SETUP_CMD='egg_info'
-        - SETUP_CMD='test'
         - PIP_DEPENDENCIES=".[test]
+
 matrix:
 
     # Don't wait for allowed failures
