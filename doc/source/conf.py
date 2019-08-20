@@ -60,7 +60,7 @@ copyright = u'2018, STScI'
 #version = stwcs.__version__
 # The full version, including alpha/beta/rc tags.
 #release = stwcs.__version__
-package = importlib.import_module(setup_cfg['package_name'])
+package = importlib.import_module('stwcs')
 try:
     version = package.__version__.split('-', 1)[0]
     # The full version, including alpha/beta/rc tags.
