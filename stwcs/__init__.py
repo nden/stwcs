@@ -19,7 +19,12 @@ from . import distortion
 from stsci.tools import fileutil
 from stsci.tools import teal
 
-from .version import *
+try:
+    from .version import * noqa: F403, F401
+except ImportError:  # Not available for RTD
+    __version_commit__ = 'unknown'
+    __version__ = 'dev'
+
 
 try:
     from . import gui

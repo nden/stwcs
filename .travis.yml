@@ -42,6 +42,7 @@ matrix:
         # Do a PEP8 test with pycodestyle
         - python: 3.6
           env: TEST_COMMAND='pycodestyle stwcs --count'
+               PIP_DEPENDENCIES='flake8'
 
         # build sphinx documentation with warnings
         - python: 3.6
