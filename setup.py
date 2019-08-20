@@ -50,6 +50,12 @@ DESCRIPTION = metadata.get('description', '')
 AUTHOR = metadata.get('author', 'STScI')
 AUTHOR_EMAIL = metadata.get('author_email', 'help@stsci.edu')
 
+DOCS_REQUIRE = ["sphinx-automodapi",
+                "sphinx_rtd_theme"
+                ]
+
+TESTS_REQUIRE = ["pytest"]
+
 class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
@@ -85,7 +91,11 @@ setup(
         'lxml'
     ],
     packages = find_packages(),
-    tests_require = ['pytest'],
+    extras_require={
+        'docs': DOCS_REQUIRE,
+        'test': TESTS_REQUIRE,
+        },
+    tests_require = TESTS_REQUIRE,
     package_data = {
         'stwcs/gui': ['*.help'],
         'stwcs/gui/pars': ['*'],

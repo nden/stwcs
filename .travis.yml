@@ -47,7 +47,7 @@ matrix:
         # build sphinx documentation with warnings
         - python: 3.6
           env: TEST_COMMAND="make --directory=doc html"
-               PIP_DEPENDENCIES='sphinx-automodapi sphinx_rtd_theme'
+               PIP_DEPENDENCIES='.[all]'
 
         - python: 3.6
           env: PIP_DEPENDENCIES="$ASTROPY_GIT $TOOLS_GIT"
@@ -57,6 +57,7 @@ matrix:
         # Do a PEP8 test with pycodestyle
         - python: 3.6
           env: TEST_COMMAND='pycodestyle stwcs --count'
+               PIP_DEPENDENCIES='flake8'
 
         - python: 3.6
           env: PIP_DEPENDENCIES="$ASTROPY_GIT $TOOLS_GIT"
