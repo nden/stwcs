@@ -50,8 +50,10 @@ DESCRIPTION = metadata.get('description', '')
 AUTHOR = metadata.get('author', 'STScI')
 AUTHOR_EMAIL = metadata.get('author_email', 'help@stsci.edu')
 
-DOCS_REQUIRE = ["sphinx-automodapi",
-                "sphinx_rtd_theme"
+DOCS_REQUIRE = ["sphinx",
+                "sphinx-automodapi",
+                "sphinx-rtd-theme",
+                'sphinx-automodapi',
                 ]
 
 TESTS_REQUIRE = ["pytest"]
